@@ -2,5 +2,5 @@ python-dotenv==1.0.0
 torch==2.2.0
 transformers==4.37.2
 scikit-learn==1.4.0
-FastAPI==0.109.0
+fastapi[all]
 pandas==2.2.0
