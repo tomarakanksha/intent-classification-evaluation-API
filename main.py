@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
-from IntentClassification import IntentClassifier
+from intent_classifier import IntentClassifier
 from contextlib import asynccontextmanager
 from pandas import read_csv
 from io import StringIO
