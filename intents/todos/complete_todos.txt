@@ -1,0 +1,4 @@
+Mark task as complete
+Finish a todo
+Complete a task
+I've finished a task
