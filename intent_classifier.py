@@ -1,4 +1,4 @@
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
+from transformers import DistilBertModel, DistilBertTokenizerFast, Trainer, TrainingArguments
 import torch
 import os
 from IntentDataset import IntentDataset
@@ -8,9 +8,9 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 
 class IntentClassifier:
-    def __init__(self, num_labels, model_name='bert-base-uncased'):
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=num_labels)
+    def __init__(self, num_labels, model_name='distilbert-base-uncased'):
+        self.tokenizer = DistilBertTokenizerFast.from_pretrained(model_name)
+        self.model = DistilBertModel.from_pretrained(model_name, num_labels=num_labels)
         self.collections = {}
         self.label_encoder = None
 
@@ -27,21 +27,22 @@ class IntentClassifier:
                     label = filename.replace('.txt', '')
                     self.collections[collection_name]['filenames'].append(label)
 
-        inputs = self.tokenizer(self.collections[collection_name]['intents'], return_tensors='pt', padding=True, truncation=True)
+        inputs = self.tokenizer(self.collections[collection_name]['filenames'], truncation=True, padding=True, max_length=512)
         self.label_encoder = LabelEncoder()
         labels = self.label_encoder.fit_transform(self.collections[collection_name]['filenames'])
         
         training_args = TrainingArguments(
-            output_dir='./results',
-            num_train_epochs=100,
-            per_device_train_batch_size=8,
-            per_device_eval_batch_size=16,
-            warmup_steps=500,
-            weight_decay=0.01,
-            logging_dir='./logs',
-            logging_steps=10,
-            report_to='none',
-            learning_rate=5e-5,
+        output_dir='./results',
+        num_train_epochs=100,
+        per_device_train_batch_size=2,
+        per_device_eval_batch_size=2, 
+        warmup_steps=500,
+        weight_decay=0.01,
+        logging_dir='./logs',
+        logging_steps=10,
+        report_to='none',
+        learning_rate=5e-5,
+        gradient_accumulation_steps=2,
         )
 
         dataset = IntentDataset(inputs, labels)
